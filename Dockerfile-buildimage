@@ -1,0 +1,20 @@
+FROM ubuntu
+
+ENV GOSU_VERSION 1.14
+
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y dist-upgrade && \
+    apt-get install -y curl gnupg && \
+    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" && \
+    curl -L -o /gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-${dpkgArch}" && \
+    curl -L -o /gosu.asc "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-${dpkgArch}.asc" && \
+    export GNUPGHOME="$(mktemp -d)" && \
+    chmod +x /gosu && \
+    /gosu nobody true
+
+# Copy the binary over from the builder image
+COPY webby /
+RUN chmod +x /webby
+
+CMD ["/webby"]

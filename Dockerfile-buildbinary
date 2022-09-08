@@ -1,0 +1,8 @@
+FROM golang:latest
+
+WORKDIR /go/src
+COPY . github.com/chrissnell/webby
+WORKDIR /go/src/github.com/chrissnell/webby
+
+# Build and strip our binary
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w -X main.Version=`git log --pretty=format:'%h' -n 1`" -a -installsuffix cgo -o webby .
